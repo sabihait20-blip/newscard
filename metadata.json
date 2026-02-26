@@ -1,0 +1,5 @@
+{
+  "name": "News Photocard Generator",
+  "description": "Generate beautiful news social media cards from any news link using AI.",
+  "requestFramePermissions": []
+}
