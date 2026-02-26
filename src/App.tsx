@@ -25,6 +25,7 @@ import { motion, AnimatePresence } from 'motion/react';
 interface NewsData {
   title: string;
   imageUrl: string;
+  logoUrl: string;
   date: string;
   source: string;
 }
@@ -44,6 +45,7 @@ export default function App() {
   const [newsData, setNewsData] = useState<NewsData>({
     title: 'আপনার খবরের শিরোনাম এখানে দেখা যাবে',
     imageUrl: 'https://picsum.photos/seed/news/800/450',
+    logoUrl: '', // Default empty, will show fallback logo
     date: new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' }),
     source: 'news.example.com'
   });
@@ -51,6 +53,17 @@ export default function App() {
   const [fontSize, setFontSize] = useState(24);
   
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'imageUrl' | 'logoUrl') => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewsData(prev => ({ ...prev, [field]: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const extractNewsData = async () => {
     if (!url) return;
@@ -80,12 +93,13 @@ export default function App() {
       });
 
       const data = JSON.parse(response.text || '{}');
-      setNewsData({
+      setNewsData(prev => ({
+        ...prev,
         title: data.title || 'শিরোনাম পাওয়া যায়নি',
         imageUrl: data.imageUrl || 'https://picsum.photos/seed/news/800/450',
         date: data.date || new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' }),
         source: data.source || new URL(url).hostname
-      });
+      }));
     } catch (err) {
       console.error(err);
       setError('খবরটি লোড করতে সমস্যা হয়েছে। অনুগ্রহ করে সঠিক লিংক দিন অথবা ম্যানুয়ালি তথ্য পরিবর্তন করুন।');
@@ -122,7 +136,7 @@ export default function App() {
             <h1 className="text-sm font-semibold uppercase tracking-wider text-slate-600">ফটোকার্ড জেনারেটর</h1>
           </motion.div>
           <h2 className="text-3xl md:text-4xl font-bold text-slate-800">নিউজ ফটোকার্ড তৈরি করুন</h2>
-          <p className="text-slate-500 mt-2">লিংক দিন আর এক ক্লিকে তৈরি করুন প্রফেশনাল নিউজ কার্ড</p>
+          <p className="text-slate-500 mt-2">লিংক দিন অথবা ম্যানুয়ালি তথ্য দিয়ে তৈরি করুন প্রফেশনাল নিউজ কার্ড</p>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -131,7 +145,7 @@ export default function App() {
             {/* URL Input */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
               <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                <LinkIcon size={16} /> নিউজ লিংক দিন
+                <LinkIcon size={16} /> অটো জেনারেট (লিংক দিন)
               </label>
               <div className="flex gap-2">
                 <input 
@@ -160,9 +174,35 @@ export default function App() {
             {/* Manual Controls */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
               <h3 className="font-bold text-slate-800 flex items-center gap-2 mb-2">
-                <Palette size={18} /> কাস্টমাইজ করুন
+                <Palette size={18} /> ম্যানুয়াল এডিট ও কাস্টমাইজ
               </h3>
               
+              {/* Images Upload */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 flex items-center gap-1">
+                    <ImageIcon size={12} /> মূল ছবি
+                  </label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, 'imageUrl')}
+                    className="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 flex items-center gap-1">
+                    <ImageIcon size={12} /> লোগো
+                  </label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, 'logoUrl')}
+                    className="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                </div>
+              </div>
+
               {/* Title */}
               <div>
                 <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">শিরোনাম</label>
@@ -241,12 +281,16 @@ export default function App() {
                 ref={cardRef}
                 id="news-card-preview"
                 className={`w-[500px] h-[500px] ${selectedGradient.class} relative overflow-hidden shadow-2xl flex flex-col p-6`}
-                style={{ borderRadius: '0' }} // Square as per typical social media cards
+                style={{ borderRadius: '0' }}
               >
                 {/* Header/Logo */}
                 <div className="flex justify-end mb-4">
                   <div className="bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 flex items-center gap-2">
-                    <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center text-[10px] font-bold text-white">N</div>
+                    {newsData.logoUrl ? (
+                      <img src={newsData.logoUrl} alt="Logo" className="w-6 h-6 object-contain rounded-full" />
+                    ) : (
+                      <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center text-[10px] font-bold text-white">N</div>
+                    )}
                     <span className="text-[10px] font-bold text-white tracking-tighter uppercase">News Nest</span>
                   </div>
                 </div>
