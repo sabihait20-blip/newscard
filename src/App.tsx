@@ -272,74 +272,82 @@ export default function App() {
           </div>
 
           {/* Right: Preview */}
-          <div className="lg:col-span-7 sticky top-8">
+          <div className="lg:col-span-7 lg:sticky lg:top-8 order-first lg:order-last">
             <div className="flex flex-col items-center">
               <div className="mb-4 text-xs font-bold text-slate-400 uppercase tracking-widest">লাইভ প্রিভিউ</div>
               
-              {/* The Card Container */}
-              <div 
-                ref={cardRef}
-                id="news-card-preview"
-                className={`w-[500px] h-[500px] ${selectedGradient.class} relative overflow-hidden shadow-2xl flex flex-col p-6`}
-                style={{ borderRadius: '0' }}
-              >
-                {/* Header/Logo */}
-                <div className="flex justify-end mb-4">
-                  <div className="bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 flex items-center gap-2">
-                    {newsData.logoUrl ? (
-                      <img src={newsData.logoUrl} alt="Logo" className="w-6 h-6 object-contain rounded-full" />
-                    ) : (
-                      <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center text-[10px] font-bold text-white">N</div>
-                    )}
-                    <span className="text-[10px] font-bold text-white tracking-tighter uppercase">News Nest</span>
-                  </div>
-                </div>
-
-                {/* Main Image Container */}
-                <div className="relative flex-1 rounded-3xl overflow-hidden border-[6px] border-white shadow-xl mb-6">
-                  <img 
-                    src={newsData.imageUrl} 
-                    alt="News" 
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://picsum.photos/seed/error/800/450';
-                    }}
-                  />
-                </div>
-
-                {/* Content Area */}
-                <div className="space-y-4">
-                  <h2 
-                    className="text-white font-bold leading-tight text-center"
-                    style={{ fontSize: `${fontSize}px` }}
+              {/* Responsive Card Wrapper */}
+              <div className="w-full flex justify-center overflow-hidden py-4">
+                <div className="relative origin-top transition-transform duration-300 scale-[0.55] min-[400px]:scale-[0.7] min-[500px]:scale-[0.85] sm:scale-100" style={{ width: '500px', height: '500px' }}>
+                  {/* The Card Container */}
+                  <div 
+                    ref={cardRef}
+                    id="news-card-preview"
+                    className={`w-[500px] h-[500px] ${selectedGradient.class} relative overflow-hidden shadow-2xl flex flex-col p-6`}
+                    style={{ borderRadius: '0' }}
                   >
-                    {newsData.title}
-                  </h2>
-
-                  <div className="flex justify-center">
-                    <div className="bg-red-600 text-white px-6 py-2 rounded-full font-bold text-sm flex items-center gap-2 shadow-lg animate-pulse">
-                      বিস্তারিত কমেন্টে <ChevronDown size={16} />
+                    {/* Header/Logo */}
+                    <div className="flex justify-end mb-4">
+                      <div className="bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 flex items-center gap-2">
+                        {newsData.logoUrl ? (
+                          <img src={newsData.logoUrl} alt="Logo" className="w-6 h-6 object-contain rounded-full" />
+                        ) : (
+                          <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center text-[10px] font-bold text-white">N</div>
+                        )}
+                        <span className="text-[10px] font-bold text-white tracking-tighter uppercase">News Nest</span>
+                      </div>
                     </div>
+
+                    {/* Main Image Container */}
+                    <div className="relative flex-1 rounded-3xl overflow-hidden border-[6px] border-white shadow-xl mb-6">
+                      <img 
+                        src={newsData.imageUrl} 
+                        alt="News" 
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://picsum.photos/seed/error/800/450';
+                        }}
+                      />
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="space-y-4">
+                      <h2 
+                        className="text-white font-bold leading-tight text-center"
+                        style={{ fontSize: `${fontSize}px` }}
+                      >
+                        {newsData.title}
+                      </h2>
+
+                      <div className="flex justify-center">
+                        <div className="bg-red-600 text-white px-6 py-2 rounded-full font-bold text-sm flex items-center gap-2 shadow-lg animate-pulse">
+                          বিস্তারিত কমেন্টে <ChevronDown size={16} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="mt-auto flex justify-between items-end text-white/70 text-[11px] font-medium">
+                      <div className="flex items-center gap-1">
+                        <Calendar size={12} /> {newsData.date}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Globe size={12} /> {newsData.source}
+                      </div>
+                    </div>
+
+                    {/* Decorative Elements */}
+                    <div className="absolute top-[-50px] left-[-50px] w-40 h-40 bg-white/5 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-[-50px] right-[-50px] w-60 h-60 bg-black/10 rounded-full blur-3xl"></div>
                   </div>
                 </div>
-
-                {/* Footer */}
-                <div className="mt-auto flex justify-between items-end text-white/70 text-[11px] font-medium">
-                  <div className="flex items-center gap-1">
-                    <Calendar size={12} /> {newsData.date}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Globe size={12} /> {newsData.source}
-                  </div>
-                </div>
-
-                {/* Decorative Elements */}
-                <div className="absolute top-[-50px] left-[-50px] w-40 h-40 bg-white/5 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-[-50px] right-[-50px] w-60 h-60 bg-black/10 rounded-full blur-3xl"></div>
               </div>
 
-              <p className="mt-6 text-slate-400 text-sm italic">
+              {/* Mobile Height Adjustment Spacer (because of scale transform) */}
+              <div className="h-0 sm:hidden block mt-[-220px] min-[400px]:mt-[-150px] min-[500px]:mt-[-70px]"></div>
+
+              <p className="mt-6 text-slate-400 text-sm italic text-center px-4">
                 * কার্ডটি ডাউনলোড করার পর আপনি এটি সোশ্যাল মিডিয়ায় শেয়ার করতে পারবেন।
               </p>
             </div>
